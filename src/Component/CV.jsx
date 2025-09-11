@@ -16,12 +16,11 @@ import {
   Divider,
   Chip,
   Avatar,
-  Link
+  Link,
+  useTheme
 } from '@mui/material';
-import { Print, Download, Brightness4, Brightness7 } from '@mui/icons-material';
-import { useReactToPrint } from 'react-to-print';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { Download, Brightness4, Brightness7 } from '@mui/icons-material';
+import { Document, Page, Text, View, StyleSheet, pdf, Image, Link as PDFLink } from '@react-pdf/renderer';
 
 // Demo data for the CV
 const cvData = {
@@ -98,8 +97,8 @@ const getDesignTokens = (mode) => ({
         primary: { main: '#2563eb' },
         secondary: { main: '#0d9488' },
         background: {
-          default: '#ffffff',
-          paper: '#f3f4f6',
+          default: '#f8fafc',
+          paper: '#ffffff',
         },
         text: {
           primary: '#111827',
@@ -124,15 +123,39 @@ const getDesignTokens = (mode) => ({
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h4: {
       fontWeight: 700,
+      fontSize: '2rem',
+      '@media (max-width:600px)': {
+        fontSize: '1.75rem',
+      },
     },
     h5: {
       fontWeight: 600,
+      fontSize: '1.5rem',
+      '@media (max-width:600px)': {
+        fontSize: '1.3rem',
+      },
     },
     h6: {
       fontWeight: 600,
+      fontSize: '1.25rem',
+      '@media (max-width:600px)': {
+        fontSize: '1.1rem',
+      },
     },
     subtitle1: {
       fontWeight: 500,
+    },
+    body1: {
+      fontSize: '1rem',
+      '@media (max-width:600px)': {
+        fontSize: '0.9rem',
+      },
+    },
+    body2: {
+      fontSize: '0.875rem',
+      '@media (max-width:600px)': {
+        fontSize: '0.8rem',
+      },
     },
   },
   components: {
@@ -152,123 +175,437 @@ const getDesignTokens = (mode) => ({
         },
       },
     },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          '@media (max-width:600px)': {
+            paddingLeft: '12px',
+            paddingRight: '12px',
+          },
+        },
+      },
+    },
   },
 });
+
+// PDF Styles - Mobile optimized
+const pdfStyles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+    padding: 20,
+    fontFamily: 'Helvetica',
+    fontSize: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 12,
+    border: '2px solid #2563eb',
+  },
+  headerText: {
+    flex: 1,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 3,
+    color: '#111827',
+  },
+  jobTitle: {
+    fontSize: 12,
+    color: '#2563eb',
+    marginBottom: 5,
+  },
+  contactInfo: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    fontSize: 8,
+    gap: 3,
+  },
+  section: {
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#2563eb',
+    borderBottom: '1px solid #2563eb',
+    paddingBottom: 2,
+  },
+  educationItem: {
+    marginBottom: 10,
+  },
+  degree: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  institution: {
+    fontSize: 9,
+    marginBottom: 2,
+  },
+  duration: {
+    fontSize: 8,
+    color: '#374151',
+  },
+  certificationItem: {
+    marginBottom: 10,
+  },
+  certificationName: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  certificationIssuer: {
+    fontSize: 9,
+    marginBottom: 2,
+  },
+  languageItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 3,
+  },
+  language: {
+    fontSize: 9,
+  },
+  proficiency: {
+    fontSize: 9,
+    color: '#374151',
+  },
+  summary: {
+    fontSize: 9,
+    lineHeight: 1.3,
+    textAlign: 'justify',
+    marginBottom: 12,
+  },
+  experienceItem: {
+    marginBottom: 12,
+  },
+  companyRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 3,
+  },
+  company: {
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  durationText: {
+    fontSize: 9,
+    color: '#374151',
+  },
+  role: {
+    fontSize: 9,
+    fontStyle: 'italic',
+    marginBottom: 5,
+  },
+  workDescription: {
+    fontSize: 9,
+    lineHeight: 1.2,
+    textAlign: 'justify',
+  },
+  skillChip: {
+    fontSize: 8,
+    margin: 1,
+    padding: '2 4',
+    border: '1px solid #ccc',
+    borderRadius: 2,
+  },
+  interestsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 2,
+  },
+  interestChip: {
+    fontSize: 8,
+    padding: '2 4',
+    border: '1px solid #ccc',
+    borderRadius: 2,
+  },
+  twoColumn: {
+    flexDirection: 'row',
+  },
+  leftColumn: {
+    width: '38%',
+    paddingRight: 10,
+  },
+  rightColumn: {
+    width: '62%',
+    paddingLeft: 10,
+  },
+  divider: {
+    borderBottom: '1px solid #eee',
+    marginVertical: 6,
+  },
+  link: {
+    color: '#2563eb',
+    textDecoration: 'none',
+    fontSize: 8,
+    marginTop: 1,
+  }
+});
+
+// Function to convert image to base64
+const toDataURL = url => fetch(url)
+  .then(response => response.blob())
+  .then(blob => new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsDataURL(blob)
+  }))
+
+// PDF Document Component
+const CVPDFDocument = ({ imageData }) => (
+  <Document>
+    <Page size="A4" style={pdfStyles.page}>
+      {/* Header Section */}
+      <View style={pdfStyles.header}>
+        {imageData && (
+          <Image
+            style={pdfStyles.avatar}
+            src={imageData}
+          />
+        )}
+        <View style={pdfStyles.headerText}>
+          <Text style={pdfStyles.name}>{cvData.personalInfo.name}</Text>
+          <Text style={pdfStyles.jobTitle}>{cvData.personalInfo.jobTitle}</Text>
+          <View style={pdfStyles.contactInfo}>
+            <Text>{cvData.personalInfo.email}</Text>
+            <Text>•</Text>
+            <Text>{cvData.personalInfo.phone}</Text>
+            <Text>•</Text>
+            <PDFLink src={cvData.personalInfo.linkedin} style={pdfStyles.link}>
+              LinkedIn
+            </PDFLink>
+          </View>
+        </View>
+      </View>
+
+      <View style={pdfStyles.twoColumn}>
+        {/* Left Column */}
+        <View style={pdfStyles.leftColumn}>
+          {/* Education Section */}
+          <View style={pdfStyles.section}>
+            <Text style={pdfStyles.sectionTitle}>Education</Text>
+            {cvData.education.map((edu, index) => (
+              <View key={index} style={pdfStyles.educationItem}>
+                <Text style={pdfStyles.degree}>{edu.degree}</Text>
+                <Text style={pdfStyles.institution}>{edu.institution}</Text>
+                <Text style={pdfStyles.duration}>{edu.duration}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Certifications Section */}
+          {cvData.certifications.length > 0 && (
+            <View style={pdfStyles.section}>
+              <Text style={pdfStyles.sectionTitle}>Certifications</Text>
+              {cvData.certifications.map((cert, index) => (
+                <View key={index} style={pdfStyles.certificationItem}>
+                  <Text style={pdfStyles.certificationName}>{cert.name}</Text>
+                  <Text style={pdfStyles.certificationIssuer}>{cert.issuer}, {cert.year}</Text>
+                  {cert.link && (
+                    <PDFLink src={cert.link} style={pdfStyles.link}>
+                      View Certificate
+                    </PDFLink>
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Languages Section */}
+          <View style={pdfStyles.section}>
+            <Text style={pdfStyles.sectionTitle}>Languages</Text>
+            {cvData.languages.map((lang, index) => (
+              <View key={index} style={pdfStyles.languageItem}>
+                <Text style={pdfStyles.language}>{lang.language}</Text>
+                <Text style={pdfStyles.proficiency}>({lang.proficiency})</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Right Column */}
+        <View style={pdfStyles.rightColumn}>
+          {/* Professional Summary */}
+          <View style={pdfStyles.section}>
+            <Text style={pdfStyles.sectionTitle}>Professional Summary</Text>
+            <Text style={pdfStyles.summary}>{cvData.personalInfo.summary}</Text>
+          </View>
+
+          {/* Experience Section */}
+          <View style={pdfStyles.section}>
+            <Text style={pdfStyles.sectionTitle}>Professional Experience</Text>
+            {cvData.experience.map((exp, index) => (
+              <View key={index} style={pdfStyles.experienceItem}>
+                <View style={pdfStyles.companyRow}>
+                  <Text style={pdfStyles.company}>{exp.company}</Text>
+                  <Text style={pdfStyles.durationText}>{exp.duration}</Text>
+                </View>
+                <Text style={pdfStyles.role}>{exp.role}</Text>
+                <Text style={pdfStyles.workDescription}>{exp.work}</Text>
+                {index < cvData.experience.length - 1 && <View style={pdfStyles.divider} />}
+              </View>
+            ))}
+          </View>
+
+          {/* Skills Section */}
+          <View style={pdfStyles.section}>
+            <Text style={pdfStyles.sectionTitle}>Skills</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              {cvData.skills.map((skill, index) => (
+                <Text key={index} style={pdfStyles.skillChip}>
+                  {skill}
+                </Text>
+              ))}
+            </View>
+          </View>
+
+          {/* Interests Section */}
+          <View style={pdfStyles.section}>
+            <Text style={pdfStyles.sectionTitle}>Interests</Text>
+            <View style={pdfStyles.interestsContainer}>
+              {cvData.interests.map((interest, index) => (
+                <Text key={index} style={pdfStyles.interestChip}>
+                  {interest}
+                </Text>
+              ))}
+            </View>
+          </View>
+        </View>
+      </View>
+    </Page>
+  </Document>
+);
 
 const CVApp = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [mode, setMode] = useState(prefersDarkMode ? 'dark' : 'light');
   const cvRef = useRef();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const theme = React.useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+  const muiTheme = React.useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
   const toggleColorMode = () => {
     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
   };
 
-  // Handle print functionality
-  const handlePrint = useReactToPrint({
-    content: () => cvRef.current,
-    documentTitle: `${cvData.personalInfo.name.replace(/\s+/g, '_')}_CV`,
-    onAfterPrint: () => console.log("Printed PDF successfully!"),
-  });
+  // Handle download as PDF using @react-pdf/renderer
+  const handleDownloadPDF = async () => {
+    try {
+      // Convert image to base64 for PDF
+      const dataUrl = await toDataURL(cvData.personalInfo.profileImage);
 
-  // Handle download as PDF using html2canvas and jsPDF
-  const handleDownloadPDF = () => {
-    const input = cvRef.current;
-    html2canvas(input, {
-      scale: 2, // Higher scale for better quality
-      useCORS: true,
-      logging: false,
-    }).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
-
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save(`${cvData.personalInfo.name.replace(/\s+/g, '_')}_CV.pdf`);
-    });
+      const blob = await pdf(<CVPDFDocument imageData={dataUrl} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${cvData.personalInfo.name.replace(/\s+/g, '_')}_CV.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      // Fallback without image if there's an error
+      const blob = await pdf(<CVPDFDocument />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${cvData.personalInfo.name.replace(/\s+/g, '_')}_CV.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={muiTheme}>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="lg" sx={{
+        py: 4,
+        transform: isMobile ? 'scale(0.95)' : 'none',
+        transformOrigin: 'top center',
+        transition: 'transform 0.3s ease',
+      }}>
         {/* Action buttons */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 3 }}>
           <IconButton onClick={toggleColorMode} color="inherit">
             {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
           </IconButton>
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<Download />}
             onClick={handleDownloadPDF}
-            sx={{ display: { print: 'none' } }}
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              py: 1,
+              background: 'linear-gradient(45deg, #2563eb 30%, #0d9488 90%)',
+              boxShadow: '0 3px 5px 2px rgba(37, 99, 235, .3)',
+              fontSize: isMobile ? '0.8rem' : '0.875rem',
+            }}
           >
-            PDF
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<Print />}
-            onClick={handlePrint}
-            sx={{ display: { print: 'none' } }}
-          >
-            Print
+            Download CV
           </Button>
         </Box>
 
         {/* CV Content */}
         <Box ref={cvRef} sx={{
-          p: { xs: 2, md: 4 },
+          p: { xs: 1, md: 4 },
           backgroundColor: 'background.default',
-          '@media print': {
-            p: 0,
-            backgroundColor: 'white',
-            '& .MuiCard-root': {
-              boxShadow: 'none',
-              backgroundColor: 'white',
-            },
-            '& .MuiPaper-root': {
-              boxShadow: 'none',
-              backgroundColor: 'white',
-            }
-          }
         }}>
-          <Paper elevation={0} sx={{
+          <Paper elevation={2} sx={{
             p: { xs: 2, md: 4 },
             backgroundColor: 'background.paper',
-            '@media print': {
-              boxShadow: 'none',
-              backgroundColor: 'white',
-            }
+            borderRadius: 3,
           }}>
             {/* Header Section */}
-            <Grid container spacing={4}>
+            <Grid container spacing={isMobile ? 2 : 4}>
               <Grid item xs={12}>
-                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', gap: 3 }}>
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  alignItems: 'center',
+                  gap: { xs: 2, md: 3 }
+                }}>
                   <Avatar
                     src={cvData.personalInfo.profileImage}
-                    sx={{ width: 120, height: 120, border: `4px solid ${theme.palette.primary.main}` }}
+                    sx={{
+                      width: { xs: 90, md: 120 },
+                      height: { xs: 90, md: 120 },
+                      border: `4px solid ${muiTheme.palette.primary.main}`
+                    }}
                   />
-                  <Box>
+                  <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
                     <Typography variant="h4" component="h1" gutterBottom>
                       {cvData.personalInfo.name}
                     </Typography>
                     <Typography variant="h6" component="h2" color="primary" gutterBottom>
                       {cvData.personalInfo.jobTitle}
                     </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                    <Box sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 1,
+                      mt: 1,
+                      justifyContent: { xs: 'center', md: 'flex-start' }
+                    }}>
                       <Typography variant="body2">{cvData.personalInfo.email}</Typography>
                       <Typography variant="body2">•</Typography>
                       <Typography variant="body2">{cvData.personalInfo.phone}</Typography>
                       <Typography variant="body2">•</Typography>
-                      <Typography variant="body2">{cvData.personalInfo.linkedin}</Typography>
+                      <Link href={cvData.personalInfo.linkedin} target="_blank" rel="noopener" variant="body2">
+                        LinkedIn
+                      </Link>
                     </Box>
                   </Box>
                 </Box>
@@ -276,8 +613,8 @@ const CVApp = () => {
 
               <Grid item xs={12} md={4}>
                 {/* Left Column */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-                  
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, md: 3 } }}>
+
                   {/* Education Section */}
                   <Card>
                     <CardContent>
@@ -292,7 +629,7 @@ const CVApp = () => {
                           <Typography variant="body2">
                             {edu.institution}
                           </Typography>
-                          <Typography variant="body2">
+                          <Typography variant="body2" color="text.secondary">
                             {edu.duration}
                           </Typography>
                         </Box>
@@ -353,14 +690,14 @@ const CVApp = () => {
 
               <Grid item xs={12} md={8}>
                 {/* Right Column */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, md: 3 } }}>
                   {/* Professional Summary */}
                   <Card>
                     <CardContent>
                       <Typography variant="h5" component="h3" gutterBottom color="primary">
                         Professional Summary
                       </Typography>
-                      <Typography variant="body1" style={{ whiteSpace: 'pre-line' }}>
+                      <Typography variant="body1" style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
                         {cvData.personalInfo.summary}
                       </Typography>
                     </CardContent>
@@ -374,37 +711,54 @@ const CVApp = () => {
                       </Typography>
                       {cvData.experience.map((exp, index) => (
                         <Box key={index} sx={{ mb: 3 }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <Typography variant="subtitle1" fontWeight="bold">
-                              {exp.company}
+                          <>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <Typography variant="subtitle1" fontWeight="bold">
+                                {exp.company}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                {exp.duration}
+                              </Typography>
+                            </Box>
+                            <Typography variant="body2" gutterBottom sx={{ fontStyle: 'italic' }}>
+                              {exp.role}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {exp.duration}
+                            <Typography variant="body2" style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                              {exp.work}
                             </Typography>
-                          </Box>
-                          <Typography variant="body2" fontStyle="italic" gutterBottom>
-                            {exp.role}
-                          </Typography>
-                          <Typography variant="body2" style={{ whiteSpace: 'pre-line' }}>
-                            {exp.work}
-                          </Typography>
-                          {index < cvData.experience.length - 1 && <Divider sx={{ mt: 2 }} />}
+                            {index < cvData.experience.length - 1 && <Divider sx={{ mt: 2 }} />}
+                          </>
                         </Box>
                       ))}
                     </CardContent>
                   </Card>
+
+                  {/* Skills Section */}
                   <Card>
                     <CardContent>
-                      <Typography variant="h5" component="h3" gutterBottom color="primary" mt={3}>
+                      <Typography variant="h5" component="h3" gutterBottom color="primary">
                         Skills
                       </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                         {cvData.skills.map((skill, index) => (
-                          <Chip key={index} label={skill} variant="outlined" sx={{ mb: 1 }} />
+                          <Chip
+                            key={index}
+                            label={skill}
+                            variant="outlined"
+                            sx={{
+                              mb: 1,
+                              mr: 1,
+                              borderColor: 'primary.main',
+                              color: 'text.primary',
+                              fontSize: { xs: '0.7rem', md: '0.8125rem' }
+                            }}
+                          />
                         ))}
                       </Box>
                     </CardContent>
                   </Card>
+
+                  {/* Interests Section */}
                   <Card>
                     <CardContent>
                       <Typography variant="h5" component="h3" gutterBottom color="primary">
@@ -412,7 +766,19 @@ const CVApp = () => {
                       </Typography>
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                         {cvData.interests.map((interest, index) => (
-                          <Chip key={index} label={interest} size="small" variant="outlined" sx={{ mb: 1 }} />
+                          <Chip
+                            key={index}
+                            label={interest}
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                              mb: 1,
+                              mr: 1,
+                              borderColor: 'secondary.main',
+                              color: 'text.primary',
+                              fontSize: { xs: '0.7rem', md: '0.8125rem' }
+                            }}
+                          />
                         ))}
                       </Box>
                     </CardContent>
@@ -421,9 +787,55 @@ const CVApp = () => {
               </Grid>
             </Grid>
           </Paper>
+
         </Box>
       </Container>
+      <Box
+        sx={{
+          mt: 4,
+          mb: 2,
+          p: 2,
+          textAlign: "center",
+          color: "text.secondary",
+          fontStyle: "italic",
+          fontSize: { xs: "0.8rem", sm: "0.875rem" },
+          backgroundColor: mode === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)',
+          borderRadius: 2,
+          border: `1px solid ${mode === 'light' ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.12)'}`,
+          maxWidth: 600,
+          mx: "auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 1,
+          '@media print': {
+            display: 'none',
+          }
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box component="span" sx={{ fontSize: "1.2rem" }}>📄</Box>
+          <Typography variant="body2" component="span">
+            This interactive CV is best viewed online.
+          </Typography>
+        </Box>
+        <Typography variant="body2">
+          For an official ATS-friendly copy, please use the{" "}
+          <Box
+            component="span"
+            sx={{
+              fontWeight: "bold",
+              color: "primary.main",
+              textDecoration: "underline"
+            }}
+          >
+            Download CV
+          </Box>{" "}
+          option above.
+        </Typography>
+      </Box>
     </ThemeProvider>
+
   );
 };
 
