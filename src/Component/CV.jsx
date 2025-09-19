@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   ThemeProvider,
   createTheme,
@@ -125,14 +125,14 @@ const getDesignTokens = (mode) => ({
       fontWeight: 700,
       fontSize: '2rem',
       '@media (max-width:600px)': {
-        fontSize: '1.75rem',
+        fontSize: '1.5rem',
       },
     },
     h5: {
       fontWeight: 600,
       fontSize: '1.5rem',
       '@media (max-width:600px)': {
-        fontSize: '1.3rem',
+        fontSize: '1.25rem',
       },
     },
     h6: {
@@ -147,14 +147,18 @@ const getDesignTokens = (mode) => ({
     },
     body1: {
       fontSize: '1rem',
+      lineHeight: 1.6,
       '@media (max-width:600px)': {
         fontSize: '0.9rem',
+        lineHeight: 1.5,
       },
     },
     body2: {
       fontSize: '0.875rem',
+      lineHeight: 1.6,
       '@media (max-width:600px)': {
         fontSize: '0.8rem',
+        lineHeight: 1.5,
       },
     },
   },
@@ -164,6 +168,10 @@ const getDesignTokens = (mode) => ({
         root: {
           borderRadius: 12,
           boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          '@media (max-width:600px)': {
+            borderRadius: 8,
+            boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06)',
+          },
         },
       },
     },
@@ -172,6 +180,9 @@ const getDesignTokens = (mode) => ({
         root: {
           borderRadius: 6,
           fontWeight: 500,
+          '@media (max-width:600px)': {
+            fontSize: '0.7rem',
+          },
         },
       },
     },
@@ -185,6 +196,18 @@ const getDesignTokens = (mode) => ({
         },
       },
     },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          '@media (max-width:600px)': {
+            minHeight: '40px',
+            fontSize: '0.8rem',
+            fontWeight: 'bold',
+            padding: '6px 12px',
+          },
+        },
+      },
+    },
   },
 });
 
@@ -193,13 +216,15 @@ const pdfStyles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    padding: 20,
+    padding: 30,
+    paddingTop: 50,
+    justifyContent: 'flex-between',
     fontFamily: 'Helvetica',
     fontSize: 10,
   },
   header: {
     flexDirection: 'row',
-    marginBottom: 15,
+    marginBottom: 20,
     alignItems: 'center',
   },
   avatar: {
@@ -221,16 +246,16 @@ const pdfStyles = StyleSheet.create({
   jobTitle: {
     fontSize: 12,
     color: '#2563eb',
-    marginBottom: 5,
+    marginBottom: 8,
   },
   contactInfo: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    fontSize: 8,
+    fontSize: 10,
     gap: 3,
   },
   section: {
-    marginBottom: 12,
+    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 12,
@@ -241,50 +266,52 @@ const pdfStyles = StyleSheet.create({
     paddingBottom: 2,
   },
   educationItem: {
-    marginBottom: 10,
+    marginBottom: 16,
   },
   degree: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   institution: {
-    fontSize: 9,
-    marginBottom: 2,
+    fontSize: 12,
+    marginBottom: 4,
   },
   duration: {
     fontSize: 8,
     color: '#374151',
   },
   certificationItem: {
-    marginBottom: 10,
+    marginBottom: 14,
   },
   certificationName: {
     fontSize: 10,
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 8,
   },
   certificationIssuer: {
-    fontSize: 9,
-    marginBottom: 2,
+    fontSize: 12,
+    marginBottom: 4,
   },
   languageItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 3,
+    marginBottom: 6,
   },
   language: {
-    fontSize: 9,
+    fontSize: 10,
+    fontWeight: 'bold',
+
   },
   proficiency: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#374151',
   },
   summary: {
-    fontSize: 9,
+    fontSize: 12,
     lineHeight: 1.3,
     textAlign: 'justify',
-    marginBottom: 12,
+    marginBottom: 18,
   },
   experienceItem: {
     marginBottom: 12,
@@ -295,26 +322,28 @@ const pdfStyles = StyleSheet.create({
     marginBottom: 3,
   },
   company: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
+    marginBottom: 8,
+
   },
   durationText: {
     fontSize: 9,
     color: '#374151',
   },
   role: {
-    fontSize: 9,
+    fontSize: 12,
     fontStyle: 'italic',
-    marginBottom: 5,
+    marginBottom: 8,
   },
   workDescription: {
-    fontSize: 9,
+    fontSize: 12,
     lineHeight: 1.2,
     textAlign: 'justify',
   },
   skillChip: {
-    fontSize: 8,
-    margin: 1,
+    fontSize: 10,
+    margin: 1.5,
     padding: '2 4',
     border: '1px solid #ccc',
     borderRadius: 2,
@@ -325,7 +354,7 @@ const pdfStyles = StyleSheet.create({
     gap: 2,
   },
   interestChip: {
-    fontSize: 8,
+    fontSize: 10,
     padding: '2 4',
     border: '1px solid #ccc',
     borderRadius: 2,
@@ -348,7 +377,7 @@ const pdfStyles = StyleSheet.create({
   link: {
     color: '#2563eb',
     textDecoration: 'none',
-    fontSize: 8,
+    fontSize: 10,
     marginTop: 1,
   }
 });
@@ -384,7 +413,7 @@ const CVPDFDocument = ({ imageData }) => (
             <Text>{cvData.personalInfo.phone}</Text>
             <Text>•</Text>
             <PDFLink src={cvData.personalInfo.linkedin} style={pdfStyles.link}>
-              LinkedIn
+              LinkedIn - Jatin-Developer
             </PDFLink>
           </View>
         </View>
@@ -489,11 +518,10 @@ const CVPDFDocument = ({ imageData }) => (
 );
 
 const CVApp = () => {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [mode, setMode] = useState(prefersDarkMode ? 'dark' : 'light');
+  const [mode, setMode] = useState('light'); // Default to light mode
   const cvRef = useRef();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const muiTheme = React.useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
@@ -506,7 +534,6 @@ const CVApp = () => {
     try {
       // Convert image to base64 for PDF
       const dataUrl = await toDataURL(cvData.personalInfo.profileImage);
-
       const blob = await pdf(<CVPDFDocument imageData={dataUrl} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -531,14 +558,26 @@ const CVApp = () => {
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
       <Container maxWidth="lg" sx={{
-        py: 4,
-        transform: isMobile ? 'scale(0.95)' : 'none',
-        transformOrigin: 'top center',
-        transition: 'transform 0.3s ease',
+        py: isMobile ? 2 : 4,
+        px: isMobile ? 1.5 : 2,
       }}>
-        {/* Action buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 3 }}>
-          <IconButton onClick={toggleColorMode} color="inherit">
+        {/* Action buttons - placed side by side */}
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 1,
+          mb: isMobile ? 2 : 3,
+        }}>
+          <IconButton
+            onClick={toggleColorMode}
+            color="inherit"
+            sx={{
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+            }}
+          >
             {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
           </IconButton>
           <Button
@@ -546,12 +585,13 @@ const CVApp = () => {
             startIcon={<Download />}
             onClick={handleDownloadPDF}
             sx={{
-              borderRadius: 2,
-              px: 3,
-              py: 1,
+              borderRadius: 1,
+              px: isMobile ? 2 : 3,
+              py: isMobile ? 1 : 1.5,
               background: 'linear-gradient(45deg, #2563eb 30%, #0d9488 90%)',
               boxShadow: '0 3px 5px 2px rgba(37, 99, 235, .3)',
               fontSize: isMobile ? '0.8rem' : '0.875rem',
+              minHeight: isMobile ? '40px' : 'auto',
             }}
           >
             Download CV
@@ -560,32 +600,33 @@ const CVApp = () => {
 
         {/* CV Content */}
         <Box ref={cvRef} sx={{
-          p: { xs: 1, md: 4 },
+          p: isMobile ? 1 : 4,
           backgroundColor: 'background.default',
         }}>
           <Paper elevation={2} sx={{
-            p: { xs: 2, md: 4 },
+            p: isMobile ? 2 : 4,
             backgroundColor: 'background.paper',
-            borderRadius: 3,
+            borderRadius: isMobile ? 2 : 3,
           }}>
             {/* Header Section */}
             <Grid container spacing={isMobile ? 2 : 4}>
               <Grid item xs={12}>
                 <Box sx={{
                   display: 'flex',
-                  flexDirection: { xs: 'column', md: 'row' },
+                  flexDirection: isMobile ? 'column' : 'row',
                   alignItems: 'center',
-                  gap: { xs: 2, md: 3 }
+                  gap: isMobile ? 2 : 3,
+                  textAlign: isMobile ? 'center' : 'left'
                 }}>
                   <Avatar
                     src={cvData.personalInfo.profileImage}
                     sx={{
-                      width: { xs: 90, md: 120 },
-                      height: { xs: 90, md: 120 },
+                      width: isMobile ? 90 : 120,
+                      height: isMobile ? 90 : 120,
                       border: `4px solid ${muiTheme.palette.primary.main}`
                     }}
                   />
-                  <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+                  <Box sx={{ textAlign: isMobile ? 'center' : 'left' }}>
                     <Typography variant="h4" component="h1" gutterBottom>
                       {cvData.personalInfo.name}
                     </Typography>
@@ -597,245 +638,417 @@ const CVApp = () => {
                       flexWrap: 'wrap',
                       gap: 1,
                       mt: 1,
-                      justifyContent: { xs: 'center', md: 'flex-start' }
+                      justifyContent: isMobile ? 'center' : 'flex-start'
                     }}>
                       <Typography variant="body2">{cvData.personalInfo.email}</Typography>
                       <Typography variant="body2">•</Typography>
                       <Typography variant="body2">{cvData.personalInfo.phone}</Typography>
                       <Typography variant="body2">•</Typography>
                       <Link href={cvData.personalInfo.linkedin} target="_blank" rel="noopener" variant="body2">
-                        LinkedIn
+                        LinkedIn - Jatin-Developer
                       </Link>
                     </Box>
                   </Box>
                 </Box>
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                {/* Left Column */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, md: 3 } }}>
-
-                  {/* Education Section */}
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5" component="h3" gutterBottom color="primary">
-                        Education
-                      </Typography>
-                      {cvData.education.map((edu, index) => (
-                        <Box key={index} sx={{ mb: 2 }}>
-                          <Typography variant="subtitle1" fontWeight="bold">
-                            {edu.degree}
-                          </Typography>
-                          <Typography variant="body2">
-                            {edu.institution}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {edu.duration}
-                          </Typography>
-                        </Box>
-                      ))}
-                    </CardContent>
-                  </Card>
-
-                  {/* Certifications Section */}
-                  {cvData.certifications.length > 0 && (
+              {/* Single column layout for mobile */}
+              {isMobile ? (
+                <Grid item xs={12}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {/* Professional Summary */}
                     <Card>
                       <CardContent>
                         <Typography variant="h5" component="h3" gutterBottom color="primary">
-                          Certifications
+                          Professional Summary
                         </Typography>
-                        {cvData.certifications.map((cert, index) => (
-                          <Box key={index} sx={{ mb: 2 }}>
-                            <Typography variant="subtitle1" fontWeight="bold">
-                              {cert.name}
-                            </Typography>
-                            <Typography variant="body2">
-                              {cert.issuer}, {cert.year}
-                            </Typography>
-                            {cert.link && (
-                              <Link
-                                href={cert.link}
-                                target="_blank"
-                                rel="noopener"
-                                variant="body2"
-                                sx={{ display: 'block', mt: 0.5 }}
-                              >
-                                View Certificate
-                              </Link>
-                            )}
+                        <Typography variant="body1" sx={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                          {cvData.personalInfo.summary}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+
+                    {/* Experience Section */}
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h5" component="h3" gutterBottom color="primary">
+                          Professional Experience
+                        </Typography>
+                        {cvData.experience.map((exp, index) => (
+                          <Box key={index} sx={{ mb: 3 }}>
+                            <>
+                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexDirection: isMobile ? 'column' : 'row' }}>
+                                <Typography variant="subtitle1" fontWeight="bold">
+                                  {exp.company}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" sx={{ mt: isMobile ? 0.5 : 0 }}>
+                                  {exp.duration}
+                                </Typography>
+                              </Box>
+                              <Typography variant="body2" gutterBottom sx={{ fontStyle: 'italic' }}>
+                                {exp.role}
+                              </Typography>
+                              <Typography variant="body2" sx={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                                {exp.work}
+                              </Typography>
+                              {index < cvData.experience.length - 1 && <Divider sx={{ mt: 2 }} />}
+                            </>
                           </Box>
                         ))}
                       </CardContent>
                     </Card>
-                  )}
 
-                  {/* Languages Section */}
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5" component="h3" gutterBottom color="primary">
-                        Languages
-                      </Typography>
-                      {cvData.languages.map((lang, index) => (
-                        <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                          <Typography variant="body2">{lang.language}</Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            ({lang.proficiency})
-                          </Typography>
+                    {/* Skills Section */}
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h5" component="h3" gutterBottom color="primary">
+                          Skills
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {cvData.skills.map((skill, index) => (
+                            <Chip
+                              key={index}
+                              label={skill}
+                              variant="outlined"
+                              sx={{
+                                mb: 1,
+                                mr: 0.5,
+                                borderColor: 'primary.main',
+                                color: 'text.primary',
+                                fontSize: '0.7rem'
+                              }}
+                            />
+                          ))}
                         </Box>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </Box>
-              </Grid>
+                      </CardContent>
+                    </Card>
 
-              <Grid item xs={12} md={8}>
-                {/* Right Column */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, md: 3 } }}>
-                  {/* Professional Summary */}
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5" component="h3" gutterBottom color="primary">
-                        Professional Summary
-                      </Typography>
-                      <Typography variant="body1" style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
-                        {cvData.personalInfo.summary}
-                      </Typography>
-                    </CardContent>
-                  </Card>
+                    {/* Education Section */}
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h5" component="h3" gutterBottom color="primary">
+                          Education
+                        </Typography>
+                        {cvData.education.map((edu, index) => (
+                          <Box key={index} sx={{ mb: 2 }}>
+                            <Typography variant="subtitle1" fontWeight="bold">
+                              {edu.degree}
+                            </Typography>
+                            <Typography variant="body2">
+                              {edu.institution}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {edu.duration}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </CardContent>
+                    </Card>
 
-                  {/* Experience Section */}
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5" component="h3" gutterBottom color="primary">
-                        Professional Experience
-                      </Typography>
-                      {cvData.experience.map((exp, index) => (
-                        <Box key={index} sx={{ mb: 3 }}>
-                          <>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    {/* Certifications Section */}
+                    {cvData.certifications.length > 0 && (
+                      <Card>
+                        <CardContent>
+                          <Typography variant="h5" component="h3" gutterBottom color="primary">
+                            Certifications
+                          </Typography>
+                          {cvData.certifications.map((cert, index) => (
+                            <Box key={index} sx={{ mb: 2 }}>
                               <Typography variant="subtitle1" fontWeight="bold">
-                                {exp.company}
+                                {cert.name}
+                              </Typography>
+                              <Typography variant="body2">
+                                {cert.issuer}, {cert.year}
+                              </Typography>
+                              {cert.link && (
+                                <Link
+                                  href={cert.link}
+                                  target="_blank"
+                                  rel="noopener"
+                                  variant="body2"
+                                  sx={{ display: 'block', mt: 0.5 }}
+                                >
+                                  View Certificate
+                                </Link>
+                              )}
+                            </Box>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Languages Section */}
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h5" component="h3" gutterBottom color="primary">
+                          Languages
+                        </Typography>
+                        {cvData.languages.map((lang, index) => (
+                          <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2">{lang.language}</Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              ({lang.proficiency})
+                            </Typography>
+                          </Box>
+                        ))}
+                      </CardContent>
+                    </Card>
+
+                    {/* Interests Section */}
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h5" component="h3" gutterBottom color="primary">
+                          Interests
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {cvData.interests.map((interest, index) => (
+                            <Chip
+                              key={index}
+                              label={interest}
+                              size="small"
+                              variant="outlined"
+                              sx={{
+                                mb: 1,
+                                mr: 0.5,
+                                borderColor: 'secondary.main',
+                                color: 'text.primary',
+                                fontSize: '0.7rem'
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                </Grid>
+              ) : (
+                /* Desktop layout (unchanged) */
+                <>
+                  <Grid item xs={12} md={4}>
+                    {/* Left Column */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      {/* Education Section */}
+                      <Card>
+                        <CardContent>
+                          <Typography variant="h5" component="h3" gutterBottom color="primary">
+                            Education
+                          </Typography>
+                          {cvData.education.map((edu, index) => (
+                            <Box key={index} sx={{ mb: 2 }}>
+                              <Typography variant="subtitle1" fontWeight="bold">
+                                {edu.degree}
+                              </Typography>
+                              <Typography variant="body2">
+                                {edu.institution}
                               </Typography>
                               <Typography variant="body2" color="text.secondary">
-                                {exp.duration}
+                                {edu.duration}
                               </Typography>
                             </Box>
-                            <Typography variant="body2" gutterBottom sx={{ fontStyle: 'italic' }}>
-                              {exp.role}
-                            </Typography>
-                            <Typography variant="body2" style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
-                              {exp.work}
-                            </Typography>
-                            {index < cvData.experience.length - 1 && <Divider sx={{ mt: 2 }} />}
-                          </>
-                        </Box>
-                      ))}
-                    </CardContent>
-                  </Card>
+                          ))}
+                        </CardContent>
+                      </Card>
 
-                  {/* Skills Section */}
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5" component="h3" gutterBottom color="primary">
-                        Skills
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {cvData.skills.map((skill, index) => (
-                          <Chip
-                            key={index}
-                            label={skill}
-                            variant="outlined"
-                            sx={{
-                              mb: 1,
-                              mr: 1,
-                              borderColor: 'primary.main',
-                              color: 'text.primary',
-                              fontSize: { xs: '0.7rem', md: '0.8125rem' }
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </CardContent>
-                  </Card>
+                      {/* Certifications Section */}
+                      {cvData.certifications.length > 0 && (
+                        <Card>
+                          <CardContent>
+                            <Typography variant="h5" component="h3" gutterBottom color="primary">
+                              Certifications
+                            </Typography>
+                            {cvData.certifications.map((cert, index) => (
+                              <Box key={index} sx={{ mb: 2 }}>
+                                <Typography variant="subtitle1" fontWeight="bold">
+                                  {cert.name}
+                                </Typography>
+                                <Typography variant="body2">
+                                  {cert.issuer}, {cert.year}
+                                </Typography>
+                                {cert.link && (
+                                  <Link
+                                    href={cert.link}
+                                    target="_blank"
+                                    rel="noopener"
+                                    variant="body2"
+                                    sx={{ display: 'block', mt: 0.5 }}
+                                  >
+                                    View Certificate
+                                  </Link>
+                                )}
+                              </Box>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      )}
 
-                  {/* Interests Section */}
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5" component="h3" gutterBottom color="primary">
-                        Interests
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {cvData.interests.map((interest, index) => (
-                          <Chip
-                            key={index}
-                            label={interest}
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                              mb: 1,
-                              mr: 1,
-                              borderColor: 'secondary.main',
-                              color: 'text.primary',
-                              fontSize: { xs: '0.7rem', md: '0.8125rem' }
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Box>
-              </Grid>
+                      {/* Languages Section */}
+                      <Card>
+                        <CardContent>
+                          <Typography variant="h5" component="h3" gutterBottom color="primary">
+                            Languages
+                          </Typography>
+                          {cvData.languages.map((lang, index) => (
+                            <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                              <Typography variant="body2">{lang.language}</Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                ({lang.proficiency})
+                              </Typography>
+                            </Box>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} md={8}>
+                    {/* Right Column */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      {/* Professional Summary */}
+                      <Card>
+                        <CardContent>
+                          <Typography variant="h5" component="h3" gutterBottom color="primary">
+                            Professional Summary
+                          </Typography>
+                          <Typography variant="body1" sx={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                            {cvData.personalInfo.summary}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+
+                      {/* Experience Section */}
+                      <Card>
+                        <CardContent>
+                          <Typography variant="h5" component="h3" gutterBottom color="primary">
+                            Professional Experience
+                          </Typography>
+                          {cvData.experience.map((exp, index) => (
+                            <Box key={index} sx={{ mb: 3 }}>
+                              <>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                  <Typography variant="subtitle1" fontWeight="bold">
+                                    {exp.company}
+                                  </Typography>
+                                  <Typography variant="body2" color="text.secondary">
+                                    {exp.duration}
+                                  </Typography>
+                                </Box>
+                                <Typography variant="body2" gutterBottom sx={{ fontStyle: 'italic' }}>
+                                  {exp.role}
+                                </Typography>
+                                <Typography variant="body2" sx={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                                  {exp.work}
+                                </Typography>
+                                {index < cvData.experience.length - 1 && <Divider sx={{ mt: 2 }} />}
+                              </>
+                            </Box>
+                          ))}
+                        </CardContent>
+                      </Card>
+
+                      {/* Skills Section */}
+                      <Card>
+                        <CardContent>
+                          <Typography variant="h5" component="h3" gutterBottom color="primary">
+                            Skills
+                          </Typography>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                            {cvData.skills.map((skill, index) => (
+                              <Chip
+                                key={index}
+                                label={skill}
+                                variant="outlined"
+                                sx={{
+                                  mb: 1,
+                                  mr: 1,
+                                  borderColor: 'primary.main',
+                                  color: 'text.primary',
+                                }}
+                              />
+                            ))}
+                          </Box>
+                        </CardContent>
+                      </Card>
+
+                      {/* Interests Section */}
+                      <Card>
+                        <CardContent>
+                          <Typography variant="h5" component="h3" gutterBottom color="primary">
+                            Interests
+                          </Typography>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                            {cvData.interests.map((interest, index) => (
+                              <Chip
+                                key={index}
+                                label={interest}
+                                size="small"
+                                variant="outlined"
+                                sx={{
+                                  mb: 1,
+                                  mr: 1,
+                                  borderColor: 'secondary.main',
+                                  color: 'text.primary',
+                                }}
+                              />
+                            ))}
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Box>
+                  </Grid>
+                </>
+              )}
             </Grid>
           </Paper>
-
         </Box>
-      </Container>
-      <Box
-        sx={{
-          mt: 4,
-          mb: 2,
-          p: 2,
-          textAlign: "center",
-          color: "text.secondary",
-          fontStyle: "italic",
-          fontSize: { xs: "0.8rem", sm: "0.875rem" },
-          backgroundColor: mode === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)',
-          borderRadius: 2,
-          border: `1px solid ${mode === 'light' ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.12)'}`,
-          maxWidth: 600,
-          mx: "auto",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 1,
-          '@media print': {
-            display: 'none',
-          }
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Box component="span" sx={{ fontSize: "1.2rem" }}>📄</Box>
-          <Typography variant="body2" component="span">
-            This interactive CV is best viewed online.
+
+        <Box
+          sx={{
+            mt: 4,
+            mb: 2,
+            p: isMobile ? 1.5 : 2,
+            textAlign: "center",
+            color: "text.secondary",
+            fontStyle: "italic",
+            fontSize: isMobile ? "0.75rem" : "0.875rem",
+            backgroundColor: mode === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)',
+            borderRadius: 2,
+            border: `1px solid ${mode === 'light' ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.12)'}`,
+            maxWidth: 600,
+            mx: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 1,
+            '@media print': {
+              display: 'none',
+            }
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Typography component="span" sx={{ fontSize: isMobile ? "1.2rem" : "1.2rem", position: "relative", top: "-4px", lineHeight: 0 }}>🌐</Typography>
+            <Typography variant="body2" component="span" sx={{ fontSize: isMobile ? "0.75rem" : "0.875rem" }}>
+              This profile is best experienced online for design and interactivity.
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ fontSize: isMobile ? "0.75rem" : "0.875rem", textAlign: "center" }}>
+            If you require a standardized version for recruitment or applicant tracking systems, please use the {" "}
+            <Box
+              component="span"
+              onClick={handleDownloadPDF}
+              sx={{
+                cursor: "pointer",
+                fontWeight: "bold",
+                color: "primary.main",
+                textDecoration: "underline"
+              }}
+            >
+              Download CV
+            </Box>{" "}
+            option above.
           </Typography>
         </Box>
-        <Typography variant="body2">
-          For an official ATS-friendly copy, please use the{" "}
-          <Box
-            component="span"
-            sx={{
-              fontWeight: "bold",
-              color: "primary.main",
-              textDecoration: "underline"
-            }}
-          >
-            Download CV
-          </Box>{" "}
-          option above.
-        </Typography>
-      </Box>
+      </Container>
     </ThemeProvider>
-
   );
 };
 
