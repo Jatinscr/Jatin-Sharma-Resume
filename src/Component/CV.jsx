@@ -43,7 +43,7 @@ const cvData = {
       company: "SainiCollection",
       role: "Frontend Developer",
       duration: "Feb 2025 - Present",
-      work: `Designed and developed responsive websites using React, JavaScript, and Material UI,
+      work: `Designed and developed responsive websites using React JavaScript and Material UI,
 Contributed to UI/UX improvements, ensuring modern and user-friendly designs,
 Managed code and collaborated via GitHub, following version control best practices,
 Performed basic testing and debugging to maintain application performance,
